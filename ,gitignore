@@ -1,8 +1,6 @@
 # Test binary, built with `go test -c`
 *.test
 
-# files, when testing
-files/
 
 # log, when testing
 *.log

@@ -1,0 +1,2 @@
+2022-11-12T16:13:37.299Z	INFO	publisher/publisher.go:32	UploadPublish: Publish msg success	{"msg_id": "91d4ceb1-01a9-4713-9488-0996e2d58af7"}
+2022-11-12T16:13:37.301Z	INFO	util/nats.go:116	QueueSubscribe: Ack msg success	{"sequence_id": 16, "msg_id": "91d4ceb1-01a9-4713-9488-0996e2d58af7"}

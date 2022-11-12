@@ -1,9 +1,8 @@
 # Test binary, built with `go test -c`
 *.test
 
-
 # log, when testing
-*.log
+logs.log
 
 # persistent-data from nats
 persistent-data/

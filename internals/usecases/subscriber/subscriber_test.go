@@ -16,7 +16,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// TODO: check unit test
 func TestUploadHandler(t *testing.T) {
 	fileName := "fileName.json"
 	tmpDir := os.TempDir()

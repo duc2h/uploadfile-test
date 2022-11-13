@@ -19,7 +19,6 @@ type NatsJetstream interface {
 	Close()
 }
 
-// TODO: update nats conf
 type NatsConf struct {
 	Url           string        `mapstructure:"URL"`
 	UserName      string        `mapstructure:"USERNAME"`

@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// TODO: write test.
 func TestUploadPublish(t *testing.T) {
 	logger := logs.NewZapLogger("test")
 	msgData := &entities.MsgData{

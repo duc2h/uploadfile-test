@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO: check value
 func TestLoadConfig(t *testing.T) {
 	t.Run("Fail: due to wrong resource", func(t *testing.T) {
 		conf := &Config{}

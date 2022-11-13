@@ -76,9 +76,6 @@ github.com/davecgh/go-spew/spew
 # github.com/fsnotify/fsnotify v1.6.0
 ## explicit; go 1.16
 github.com/fsnotify/fsnotify
-# github.com/gin-contrib/size v0.0.0-20220829131622-0fc0bc875336
-## explicit; go 1.16
-github.com/gin-contrib/size
 # github.com/gin-contrib/sse v0.1.0
 ## explicit; go 1.12
 github.com/gin-contrib/sse

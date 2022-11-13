@@ -1,8 +1,0 @@
-2022-11-13T09:29:49.811Z	INFO	util/nats.go:67	CreateStream: stream is exist
-2022-11-13T09:29:49.814Z	INFO	subscriber/subscriber.go:34	Create UploadSubscription successfully
-2022-11-13T09:31:13.885Z	INFO	util/nats.go:67	CreateStream: stream is exist
-2022-11-13T09:31:13.886Z	INFO	subscriber/subscriber.go:34	Create UploadSubscription successfully
-2022-11-13T09:31:23.275Z	INFO	publisher/publisher.go:32	UploadPublish: Publish msg success	{"msg_id": "1aa62321-8148-4131-99ac-5e1dd0d954d1"}
-2022-11-13T09:31:23.276Z	INFO	util/nats.go:115	QueueSubscribe: Ack msg success	{"sequence_id": 6418, "msg_id": "1aa62321-8148-4131-99ac-5e1dd0d954d1"}
-2022-11-13T09:32:33.950Z	INFO	util/nats.go:67	CreateStream: stream is exist
-2022-11-13T09:32:33.952Z	INFO	subscriber/subscriber.go:34	Create UploadSubscription successfully

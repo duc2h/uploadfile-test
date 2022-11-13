@@ -107,3 +107,48 @@ ok      github-com/edarha/uploadfile-test/internals/usecases/publisher  0.017s
 ok      github-com/edarha/uploadfile-test/internals/usecases/subscriber 0.016s
 ok      github-com/edarha/uploadfile-test/internals/util        0.011s
 ```
+6. In order to monitor your nats. You can use [nats-box](https://github.com/nats-io/nats-box)
+Run it by docker `docker run --rm --network host -it natsio/nats-box:latest`
+
+Then we will connect to nats-server by this command: `nats context save s1 --user=admin --password=admin --server=nats://127.0.0.1:4223 --select`
+
+After connect success, we can run `nats --help` to use some commands.
+```
+LAP00335:~# nats str info upload
+Information for Stream upload created 2022-11-13T09:55:18Z
+
+Configuration:
+
+             Subjects: upload.send
+     Acknowledgements: true
+            Retention: File - Interest
+             Replicas: 1
+       Discard Policy: Old
+     Duplicate Window: 2m0s
+    Allows Msg Delete: true
+         Allows Purge: true
+       Allows Rollups: false
+     Maximum Messages: unlimited
+        Maximum Bytes: unlimited
+          Maximum Age: unlimited
+ Maximum Message Size: unlimited
+    Maximum Consumers: unlimited
+
+
+State:
+
+             Messages: 0
+                Bytes: 0 B
+             FirstSeq: 180,224
+              LastSeq: 180,223 @ 2022-11-13T10:18:10 UTC
+     Active Consumers: 1
+
+LAP00335:~# nats con report upload
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                          Consumer report for upload with 1 consumers                                                          │
+├──────────────┬──────┬────────────┬──────────┬─────────────┬─────────────┬─────────────┬───────────┬───────────────────────────────────────────────────────────┤
+│ Consumer     │ Mode │ Ack Policy │ Ack Wait │ Ack Pending │ Redelivered │ Unprocessed │ Ack Floor │ Cluster                                                   │
+├──────────────┼──────┼────────────┼──────────┼─────────────┼─────────────┼─────────────┼───────────┼───────────────────────────────────────────────────────────┤
+│ upload-queue │ Push │ Explicit   │ 30.00s   │ 0           │ 0           │ 0           │ 180,223   │ NAQT6UPEWCFNJES4PVKEJYSKEVY7UTB35FOPAVUZ22JOPM6XZ6NGQBHB* │
+
+```

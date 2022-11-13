@@ -8,7 +8,6 @@ import (
 	"github-com/edarha/uploadfile-test/internals/usecases/subscriber"
 	"github-com/edarha/uploadfile-test/internals/util"
 
-	limits "github.com/gin-contrib/size"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
@@ -66,7 +65,7 @@ func main() {
 
 	// init api server
 	r := gin.Default()
-	r.Use(limits.RequestSizeLimiter(10000)) // limit 10KB
+	r.Use(router.CheckLimitPayload(10000)) // limit 10KB
 	r.POST("/user/batch", router.UserBatch())
 
 	r.Run(":8080")

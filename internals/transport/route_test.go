@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github-com/edarha/uploadfile-test/internals/logs"
@@ -54,6 +55,23 @@ func TestUserBatch(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "Cannot publish a message", res.Message)
 	})
+
+	t.Run("Fail: the status is 413, Payload is over 10KB", func(t *testing.T) {
+		data, err := os.ReadFile("../../files/payload-heavy.json")
+		assert.NoError(t, err)
+
+		_, w, err := userBatchPublishFail(bytes.NewBuffer(data))
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusRequestEntityTooLarge, w.Code)
+
+		body, err := ioutil.ReadAll(w.Body)
+		assert.NoError(t, err)
+
+		res := &responseBody{}
+		err = json.Unmarshal(body, res)
+		assert.NoError(t, err)
+		assert.Equal(t, "Payload is over 10KB", res.Message)
+	})
 }
 
 func userBatchPublishSuccess(body *bytes.Buffer) (*http.Request, *httptest.ResponseRecorder, error) {
@@ -70,6 +88,7 @@ func userBatchPublishSuccess(body *bytes.Buffer) (*http.Request, *httptest.Respo
 		Logger: logger,
 	}
 
+	r.Use(router.CheckLimitPayload(10000))
 	r.POST("/", router.UserBatch())
 	req, err := http.NewRequest(http.MethodPost, "/", body)
 	if err != nil {
@@ -97,6 +116,7 @@ func userBatchPublishFail(body *bytes.Buffer) (*http.Request, *httptest.Response
 		Logger: logger,
 	}
 
+	r.Use(router.CheckLimitPayload(10000))
 	r.POST("/", router.UserBatch())
 	req, err := http.NewRequest(http.MethodPost, "/", body)
 	if err != nil {

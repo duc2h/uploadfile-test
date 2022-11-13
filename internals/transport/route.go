@@ -20,6 +20,30 @@ type Router struct {
 	Logger *zap.Logger
 }
 
+func (r *Router) CheckLimitPayload(limit int) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		body := c.Request.Body
+		data, err := ioutil.ReadAll(body)
+		if err != nil {
+			r.Logger.Error("Cannot read the payload", zap.Error(err))
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"message": "Cannot read the payload",
+			})
+			return
+		}
+
+		if len(data) > limit {
+			r.Logger.Error("Payload is over 10KB", zap.Error(err))
+			c.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, gin.H{
+				"message": "Payload is over 10KB",
+			})
+			return
+		}
+
+		c.Next()
+	}
+}
+
 // Serve api /user/batch
 // Create a file with uuid.
 // Publish msg to nats with `upload.send` subject.

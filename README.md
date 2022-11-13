@@ -6,7 +6,7 @@
 - Install [Docker compose](https://docs.docker.com/compose/install/other/)
 - Install `make`: `sudo apt install build-essential`
 - Install [go](https://golang.org/dl/), version at least `1.19.1`
-- Install (vegeta)[https://github.com/tsenart/vegeta#source]
+- Install [vegeta](https://github.com/tsenart/vegeta#source)
 
 ## Explain my application:
 ### Concept
@@ -16,7 +16,8 @@
 
 => For these reasons above, I decided use [Nats-Jetstream](https://docs.nats.io/nats-concepts/jetstream) pub/sub in this project. 
 It is same like queue, it has publisher and subscriber. So when user make a request, the data will be published by publisher to the queue, 
-subscriber listens the queue, then the data will be processed by subscriber and send it to gcp/s3.
+subscriber listens the queue, then the data will be processed by subscriber and send it to gcp/s3. Btw, because I don't have gcp account,
+so I used [mockery](https://github.com/vektra/mockery) to generate the mock when we upload data to gcp.
 
 - Pros:
     - User don't need to wait the uploading process complete.
@@ -27,6 +28,36 @@ subscriber listens the queue, then the data will be processed by subscriber and 
 
 ![follow](https://user-images.githubusercontent.com/36435846/201523208-9fe4c101-65c9-42c4-9d54-1bbe5251cd20.png)
 
+
+### Skeleton project
+
+```
+├── configs // variable environment
+├── docker-compose.yaml // run program with docker
+├── files // payload to run api
+├── internals
+│   ├── logs // store logs into file for tracing.
+│   ├── transport
+│   │   ├── route.go // the api and middleware to serve
+│   │   └── route_test.go // unit test of route
+│   ├── usecase // all logics at here 
+│   │   ├── entities
+│   │   ├── mocks // we use mockery to generate these files
+│   │   ├── publisher
+|   │   │   ├── publisher_test.go // the unit test of publisher logic
+|   │   │   └──publisher.go // publish message to nats
+│   │   └── subscriber
+|   │   │   ├── gcp.go // upload data to gcp
+|   │   │   ├── s3.go // upload data to s3
+|   │   │   ├── subscriber_test.go // the unit test of subscriber logic
+|   │   │   ├── subscriber.go // receive message from nats then call gcp/s3 to upload data.
+|   │   │   └── upload-file.go // interface to define upload method.
+│   ├── util 
+│   │   ├── config_test.go // the unit test of config logic
+│   │   ├── config.go // define some config fields of service
+│   │   ├── constants.go // almost elements of nats
+│   │   └── nats.go // interface and nats implement.
+└── main.go
 
 ## Run the application:
 ### In order to run the application:

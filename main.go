@@ -7,6 +7,9 @@ import (
 	"github-com/edarha/uploadfile-test/internals/usecases/publisher"
 	"github-com/edarha/uploadfile-test/internals/usecases/subscriber"
 	"github-com/edarha/uploadfile-test/internals/util"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
@@ -49,8 +52,7 @@ func main() {
 		FileStore: mFileStore,
 	}
 
-	err = s.UploadSubscription()
-	if err != nil {
+	if err := s.UploadSubscription(); err != nil {
 		logger.Panic("Cannot create subscription", zap.Error(err))
 	}
 
@@ -68,7 +70,20 @@ func main() {
 	r.Use(router.CheckLimitPayload(10000)) // limit 10KB
 	r.POST("/user/batch", router.UserBatch())
 
-	r.Run(":8080")
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-	// TODO: graceful shutdown
+	go func() {
+		if err := r.Run(":8080"); err != nil {
+			logger.Panic("Cannot serve api", zap.Error(err))
+		}
+	}()
+
+	<-quit
+	natsjs.Close()
+	if err := mFileStore.Close(); err != nil {
+		logger.Error("Cannot close FileStore", zap.Error(err))
+	}
+
+	logger.Info("Server is shutdown")
 }

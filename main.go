@@ -7,7 +7,6 @@ import (
 	"github-com/edarha/uploadfile-test/internals/usecases/publisher"
 	"github-com/edarha/uploadfile-test/internals/usecases/subscriber"
 	"github-com/edarha/uploadfile-test/internals/util"
-	"time"
 
 	limits "github.com/gin-contrib/size"
 	"github.com/gin-gonic/gin"
@@ -16,18 +15,22 @@ import (
 )
 
 func main() {
+	// init dependencies
 	logger := logs.NewZapLogger("development")
-	r := gin.Default()
-	// TODO: get config
+	natsConf := &util.NatsConf{}
+	err := util.LoadConfig("configs", "nats", natsConf)
+	if err != nil {
+		logger.Panic("LoadConfig occur problem", zap.Error(err))
+	}
+
 	// init nats
 	natsjs, err := util.ConnectNats(logger, util.NatsConf{
-		Url:           "nats://nats:4223",
-		UserName:      "admin",
-		Password:      "admin",
-		MaxReconnect:  10,
-		ReconnectWait: time.Second,
+		Url:           natsConf.Url,
+		UserName:      natsConf.UserName,
+		Password:      natsConf.Password,
+		MaxReconnect:  natsConf.MaxReconnect,
+		ReconnectWait: natsConf.ReconnectWait,
 	})
-
 	if err != nil {
 		logger.Panic("Cannot connect to nats", zap.Error(err))
 	}
@@ -61,10 +64,11 @@ func main() {
 		Logger: logger,
 	}
 
+	// init api server
+	r := gin.Default()
 	r.Use(limits.RequestSizeLimiter(10000)) // limit 10KB
 	r.POST("/user/batch", router.UserBatch())
 
 	r.Run(":8080")
 
-	// TODO: gracefulshutdown
 }

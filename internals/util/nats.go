@@ -21,15 +21,14 @@ type NatsJetstream interface {
 
 // TODO: update nats conf
 type NatsConf struct {
-	Url           string
-	UserName      string
-	Password      string
-	MaxReconnect  int
-	ReconnectWait time.Duration
+	Url           string        `mapstructure:"URL"`
+	UserName      string        `mapstructure:"USERNAME"`
+	Password      string        `mapstructure:"PASSWORD"`
+	MaxReconnect  int           `mapstructure:"MAX_RECONNECT"`
+	ReconnectWait time.Duration `mapstructure:"RECONNECT_WAIT"`
 }
 
 type NatsJSImpl struct {
-	NatsConf
 	conn   *nats.Conn
 	js     nats.JetStreamContext
 	subs   []*nats.Subscription

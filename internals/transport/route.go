@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github-com/edarha/uploadfile-test/internals/usecases/entities"
 	"github-com/edarha/uploadfile-test/internals/usecases/publisher"
@@ -26,25 +27,20 @@ func (r *Router) UserBatch() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data, err := ioutil.ReadAll(c.Request.Body)
 		if err != nil {
+			r.Logger.Error("Cannot read the payload", zap.Error(err))
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"message": "Cannot read the payload",
 			})
 			return
 		}
 
-		fileName := uuid.New()
-		path := fmt.Sprintf("files/%s.json", fileName)
-		f, err := os.Create(path)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": "Cannot create a file",
-			})
-			return
-		}
-		defer f.Close()
+		fileName := fmt.Sprintf("%s.json", uuid.New())
+		tmpDir := os.TempDir()
+		path := filepath.Join(tmpDir, fileName)
 
-		_, err = f.Write(data)
+		err = os.WriteFile(path, data, 0666)
 		if err != nil {
+			r.Logger.Error("Cannot write a file", zap.Error(err))
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"message": "Cannot write a file",
 			})
@@ -53,7 +49,7 @@ func (r *Router) UserBatch() gin.HandlerFunc {
 
 		// create msg data
 		msgData := &entities.MsgData{
-			FileName: fmt.Sprintf("%s.json", fileName),
+			FileName: fileName,
 			Path:     path,
 		}
 

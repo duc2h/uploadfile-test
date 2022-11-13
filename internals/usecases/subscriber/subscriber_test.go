@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github-com/edarha/uploadfile-test/internals/logs"
@@ -18,7 +19,8 @@ import (
 // TODO: check unit test
 func TestUploadHandler(t *testing.T) {
 	fileName := "fileName.json"
-	path := fmt.Sprintf("../../../files/%s", fileName)
+	tmpDir := os.TempDir()
+	path := filepath.Join(tmpDir, fileName)
 	_, err := os.Create(path)
 	assert.NoError(t, err)
 

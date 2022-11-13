@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -9,52 +10,32 @@ import (
 
 // TODO: check value
 func TestLoadConfig(t *testing.T) {
-	testCases := []struct {
-		name     string
-		resource string
-		path     string
-		check    func(*testing.T, *Config, error)
-	}{
-		{
-			name:     "Fail: wrong path",
-			resource: "test",
-			path:     "wrong_path",
-			check: func(t *testing.T, conf *Config, err error) {
-				assert.Error(t, err)
-				assert.Equal(t, "Config File \"app.test\" Not Found in \"[/home/duchh/Desktop/edarha/uploadfile-test/internals/util/wrong_path]\"", err.Error())
-				assert.Nil(t, conf)
-			},
-		},
-		{
-			name:     "Fail: wrong env",
-			resource: "wrong_env",
-			path:     "../../configs",
-			check: func(t *testing.T, conf *Config, err error) {
-				assert.Error(t, err)
-				assert.Equal(t, "Config File \"app.wrong_env\" Not Found in \"[/home/duchh/Desktop/edarha/uploadfile-test/configs]\"", err.Error())
-				assert.Nil(t, conf)
-			},
-		},
-		{
-			name:     "Success: load config success",
-			resource: "test",
-			path:     "../../configs",
-			check: func(t *testing.T, conf *Config, err error) {
-				assert.NoError(t, err)
-				assert.NotNil(t, conf)
-				assert.Equal(t, "google_project_id", conf.GoogleProjectID)
-				assert.Equal(t, "aws_secret_key", conf.AwsSecretKey)
-				assert.Equal(t, time.Second*30, conf.Timeout)
-			},
-		},
-	}
+	t.Run("Fail: due to wrong resource", func(t *testing.T) {
+		conf := &Config{}
+		err := LoadConfig("../../configs", "wrong_resource", conf)
+		assert.Error(t, err)
+	})
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// os.Setenv("ENVIRONMENT", tc.env)
-			conf := &Config{}
-			err := LoadConfig(tc.path, tc.resource, conf)
-			tc.check(t, conf, err)
-		})
-	}
+	t.Run("Fail: due to wrong path", func(t *testing.T) {
+		conf := &Config{}
+		err := LoadConfig("../../wrong_path", "wrong_resource", conf)
+		assert.Error(t, err)
+	})
+
+	t.Run("Success: get config from service.env", func(t *testing.T) {
+		conf := &Config{}
+		err := LoadConfig("../../configs", "service", conf)
+		assert.NoError(t, err)
+		assert.Equal(t, "google_credential_path", conf.GoogleCredentialPath)
+		assert.Equal(t, time.Second*30, conf.Timeout)
+	})
+
+	t.Run("Success: get config from nats.env", func(t *testing.T) {
+		conf := &NatsConf{}
+		err := LoadConfig("../../configs", "nats", conf)
+		fmt.Println(conf)
+		assert.NoError(t, err)
+		assert.Equal(t, 10, conf.MaxReconnect)
+		assert.Equal(t, time.Second*10, conf.ReconnectWait)
+	})
 }

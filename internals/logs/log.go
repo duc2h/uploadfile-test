@@ -7,9 +7,12 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func NewZapLogger(logLevel string) *zap.Logger {
+func NewZapLogger(env string) *zap.Logger {
 	config := zap.NewDevelopmentConfig()
-	config.OutputPaths = []string{"logs.log"}
+	if env != "test" {
+		config.OutputPaths = []string{"logs.log"}
+	}
+
 	config.DisableStacktrace = true
 	config.EncoderConfig.TimeKey = "datetime"
 	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder

@@ -42,25 +42,20 @@ func (s *Subscriber) UploadHandler(ctx context.Context, data []byte) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
 	defer cancel()
 
-	// TODO:
 	var msgData entities.MsgData
 	err := json.Unmarshal(data, &msgData)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("UploadHandler: cannot unmarshal data, err: %s", err.Error()))
 	}
 
-	err = s.FileStore.UploadFile(ctx, msgData.FileName)
+	err = s.FileStore.UploadFile(ctx, msgData.FileName, msgData.Path)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("UploadHandler: UploadFile occur error, fileName: %s, err: %s", msgData.FileName, err.Error()))
 	}
 
-	// TODO: delete a file
-	filePath := fmt.Sprintf("files/%s", msgData.FileName)
-	err = os.Remove(filePath)
+	err = os.Remove(msgData.Path)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("UploadHandler: remove file %s occur error, err: %s", filePath, err.Error()))
+		s.Logger.Error("Remove file failed", zap.String("filePath", msgData.Path))
 	}
-
-	s.Logger.Info("Remove file success", zap.String("filePath", filePath))
 	return nil
 }

@@ -1,7 +1,6 @@
 package util
 
 import (
-	"os"
 	"time"
 
 	"github.com/spf13/viper"
@@ -24,24 +23,21 @@ type Config struct {
 	Timeout time.Duration `mapstructure:"TIME_OUT"`
 }
 
-func LoadConfig(path string) (*Config, error) {
-	var conf *Config
+func LoadConfig(path string, env string, ref interface{}) error {
 	viper.AddConfigPath(path)
-	stage := os.Getenv("ENVIRONMENT")
-	name := "app." + stage
+	name := "app." + env
 	viper.SetConfigName(name)
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
 	err := viper.ReadInConfig()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	err = viper.Unmarshal(&conf)
+	err = viper.Unmarshal(&ref)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	return conf, nil
+	return nil
 }

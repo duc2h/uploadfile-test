@@ -5,6 +5,6 @@ import (
 )
 
 type FileStore interface {
-	UploadFile(ctx context.Context, fileName string) error
+	UploadFile(ctx context.Context, fileName, path string) error
 	Close() error
 }

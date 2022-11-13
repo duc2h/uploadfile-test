@@ -27,13 +27,13 @@ func (_m *FileStore) Close() error {
 	return r0
 }
 
-// UploadFile provides a mock function with given fields: ctx, fileName
-func (_m *FileStore) UploadFile(ctx context.Context, fileName string) error {
-	ret := _m.Called(ctx, fileName)
+// UploadFile provides a mock function with given fields: ctx, fileName, path
+func (_m *FileStore) UploadFile(ctx context.Context, fileName string, path string) error {
+	ret := _m.Called(ctx, fileName, path)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
-		r0 = rf(ctx, fileName)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+		r0 = rf(ctx, fileName, path)
 	} else {
 		r0 = ret.Error(0)
 	}

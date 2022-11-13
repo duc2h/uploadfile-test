@@ -33,7 +33,7 @@ func (r *Router) UserBatch() gin.HandlerFunc {
 		}
 
 		fileName := uuid.New()
-		path := fmt.Sprintf("./files/%s.json", fileName)
+		path := fmt.Sprintf("files/%s.json", fileName)
 		f, err := os.Create(path)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -54,6 +54,7 @@ func (r *Router) UserBatch() gin.HandlerFunc {
 		// create msg data
 		msgData := &entities.MsgData{
 			FileName: fmt.Sprintf("%s.json", fileName),
+			Path:     path,
 		}
 
 		// publish msg to nats

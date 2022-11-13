@@ -16,8 +16,9 @@ import (
 )
 
 func main() {
-	logger := logs.NewZapLogger("debug")
+	logger := logs.NewZapLogger("development")
 	r := gin.Default()
+	// TODO: get config
 	// init nats
 	natsjs, err := util.ConnectNats(logger, util.NatsConf{
 		Url:           "nats://nats:4223",
@@ -64,4 +65,6 @@ func main() {
 	r.POST("/user/batch", router.UserBatch())
 
 	r.Run(":8080")
+
+	// TODO: gracefulshutdown
 }

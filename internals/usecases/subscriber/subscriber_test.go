@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 
+	"github-com/edarha/uploadfile-test/internals/logs"
 	"github-com/edarha/uploadfile-test/internals/usecases/entities"
 	"github-com/edarha/uploadfile-test/internals/usecases/mocks"
 
@@ -15,28 +17,40 @@ import (
 
 // TODO: check unit test
 func TestUploadHandler(t *testing.T) {
-	mFileStore := &mocks.FileStore{}
-	s := Subscriber{
-		FileStore: mFileStore,
-	}
+	fileName := "fileName.json"
+	path := fmt.Sprintf("../../../files/%s", fileName)
+	_, err := os.Create(path)
+	assert.NoError(t, err)
+
 	msg := entities.MsgData{
-		FileName: "fileName",
+		FileName: fileName,
+		Path:     path,
 	}
 	data, err := json.Marshal(msg)
 	assert.NoError(t, err)
 
+	t.Run("Success: process msg success", func(t *testing.T) {
+		mFileStore := &mocks.FileStore{}
+		s := Subscriber{
+			FileStore: mFileStore,
+			Logger:    logs.NewZapLogger("test"),
+		}
+		mFileStore.On("UploadFile", mock.Anything, msg.FileName, msg.Path).Return(nil)
+		err = s.UploadHandler(context.Background(), data)
+
+		assert.NoError(t, err)
+	})
+
 	t.Run("Fail: process msg occur error", func(t *testing.T) {
-		mFileStore.On("UploadFile", mock.Anything, msg.FileName).Return(fmt.Errorf("cannot upload file"))
+		mFileStore := &mocks.FileStore{}
+		s := Subscriber{
+			FileStore: mFileStore,
+		}
+		mFileStore.On("UploadFile", mock.Anything, msg.FileName, msg.Path).Return(fmt.Errorf("cannot upload file"))
 		err = s.UploadHandler(context.Background(), data)
 
 		assert.Error(t, err)
-		assert.Equal(t, "UploadHandler: UploadFile occur error, err: cannot upload file", err.Error())
+		assert.Equal(t, "UploadHandler: UploadFile occur error, fileName: fileName.json, err: cannot upload file", err.Error())
 	})
 
-	// t.Run("Success: process msg success", func(t *testing.T) {
-	// 	mFileStore.On("UploadFile", mock.Anything, msg.ObjectName, msg.PathFile).Return(nil)
-	// 	err = s.UploadHandler(context.Background(), data)
-
-	// 	assert.NoError(t, err)
-	// })
 }

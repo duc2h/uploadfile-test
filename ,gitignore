@@ -2,7 +2,7 @@
 *.test
 
 # log, when testing
-logs.log
+*.log
 
 # persistent-data from nats
 persistent-data/

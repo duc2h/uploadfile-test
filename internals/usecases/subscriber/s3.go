@@ -39,12 +39,11 @@ func NewAWSClient(ctx context.Context, log *zap.Logger, conf *util.Config) (*AWS
 	return awsClient, nil
 }
 
-func (a *AWSClient) UploadFile(ctx context.Context, fileName string) error {
+func (a *AWSClient) UploadFile(ctx context.Context, fileName, path string) error {
 	_, cancel := context.WithTimeout(ctx, time.Second*a.conf.Timeout)
 	defer cancel()
 
-	pathName := fmt.Sprintf("/files/%s.json", fileName)
-	f, err := os.Open(pathName)
+	f, err := os.Open(path)
 	if err != nil {
 		return err
 	}

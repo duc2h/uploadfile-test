@@ -36,12 +36,11 @@ func NewGCPClient(ctx context.Context, log *zap.Logger, conf *util.Config) (*GCP
 	return gcpClient, nil
 }
 
-func (g *GCPClient) UploadFile(ctx context.Context, fileName string) error {
+func (g *GCPClient) UploadFile(ctx context.Context, fileName, path string) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*g.conf.Timeout)
 	defer cancel()
 
-	pathFile := fmt.Sprintf("/files/%s", fileName)
-	f, err := os.Open(pathFile)
+	f, err := os.Open(path)
 	if err != nil {
 		return err
 	}

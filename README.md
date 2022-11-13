@@ -58,6 +58,7 @@ so I used [mockery](https://github.com/vektra/mockery) to generate the mock when
 │   │   ├── constants.go // almost elements of nats
 │   │   └── nats.go // interface and nats implement.
 └── main.go
+```
 
 ## Run the application:
 ### In order to run the application:
